@@ -67,7 +67,7 @@ const achievements = [
 ]
 
 const socials = [
-  { label: 'LinkedIn', href: 'https://linkedin.com/in/thrisha-k' },
+  { label: 'LinkedIn', href: 'https://www.linkedin.com/in/thrisha-k-b17599321/' },
   { label: 'GitHub', href: 'https://github.com/ThrishahK' },
   { label: 'Email', href: 'mailto:kthrisha54@gmail.com' }
 ]
