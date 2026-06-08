@@ -1,121 +1,427 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from './assets/vite.svg'
-import heroImg from './assets/hero.png'
-import './App.css'
+import { useEffect, useState } from 'react'
+import { motion } from 'framer-motion'
+
+const roles = ['AI Developer', 'Backend Engineer', 'Problem Solver', 'Builder']
+
+const projects = [
+  {
+    title: 'InterviewIQ',
+    description:
+      'AI-powered interview simulation platform with voice-driven mock interviews, scoring, and feedback.',
+    features: ['Speech transcription', 'LLM evaluation', 'Groq Whisper', 'Llama 3.3 70B'],
+    github: 'https://github.com/ThrishahK/AIB',
+    live: '#',
+    tech: ['React', 'FastAPI', 'Python', 'AI']
+  },
+  {
+    title: 'Hotel Management System',
+    description:
+      'End-to-end hotel operations portal for reservations, dining, orders, and customer workflows.',
+    features: ['MySQL integration', 'Responsive UI', 'Booking engine', 'Service management'],
+    github: 'https://github.com/ThrishahK/HotelManagementFinal',
+    live: '#',
+    tech: ['HTML', 'CSS', 'JavaScript', 'MySQL']
+  }
+]
+
+const skills = [
+  'Java',
+  'Python',
+  'Spring Boot',
+  'React',
+  'FastAPI',
+  'Web Scraping',
+  'REST API',
+  'Tailwind',
+  'GSAP',
+  'Three.js'
+]
+
+const timeline = [
+  {
+    title: 'Data Enricher Intern',
+    company: 'Fashion Intelligence Studio',
+    date: 'Jun 2025 – Jul 2025',
+    bullets: [
+      'Built Selenium pipelines for product data extraction at scale.',
+      'Cleaned, normalized, and enriched fashion attributes with automation.',
+      'Implemented color analysis to power personalization workflows.'
+    ]
+  },
+  {
+    title: 'Core Technical Member',
+    company: 'Computer Society of India (CSI)',
+    date: '2024 – Present',
+    bullets: [
+      'Led a multiplayer gamified coding platform team.',
+      'Guided architecture, implementation, and project presentations.',
+      'Organized workshops and technical collaboration events.'
+    ]
+  }
+]
+
+const achievements = [
+  { label: 'Excellent CGPA', value: '9.56' },
+  { label: 'Fashion Data Pipeline', value: '50K+ items' },
+  { label: 'Global Awards', value: '2 International' }
+]
+
+const socials = [
+  { label: 'LinkedIn', href: 'https://linkedin.com/in/thrisha-k' },
+  { label: 'GitHub', href: 'https://github.com/ThrishahK' },
+  { label: 'Email', href: 'mailto:kthrisha54@gmail.com' }
+]
+
+const fadeUp = {
+  hidden: { opacity: 0, y: 36 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
+}
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [phraseIndex, setPhraseIndex] = useState(0)
+  const [displayText, setDisplayText] = useState('')
+  const [pointer, setPointer] = useState({ x: 0, y: 0 })
+
+  useEffect(() => {
+    const current = roles[phraseIndex]
+    let timeout
+
+    if (displayText.length < current.length) {
+      timeout = setTimeout(
+        () => setDisplayText(current.slice(0, displayText.length + 1)),
+        80
+      )
+    } else {
+      timeout = setTimeout(() => {
+        setDisplayText('')
+        setPhraseIndex((value) => (value + 1) % roles.length)
+      }, 1400)
+    }
+
+    return () => clearTimeout(timeout)
+  }, [displayText, phraseIndex])
 
   return (
-    <>
-      <section id="center">
-        <div className="hero">
-          <img src={heroImg} className="base" width="170" height="179" alt="" />
-          <img src={reactLogo} className="framework" alt="React logo" />
-          <img src={viteLogo} className="vite" alt="Vite logo" />
-        </div>
-        <div>
-          <h1>Get started</h1>
-          <p>
-            Edit <code>src/App.jsx</code> and save to test <code>HMR</code>
-          </p>
-        </div>
-        <button
-          type="button"
-          className="counter"
-          onClick={() => setCount((count) => count + 1)}
+    <div
+      className="relative min-h-screen overflow-hidden bg-[#05040f] text-slate-100"
+      onMouseMove={(event) => {
+        setPointer({ x: event.clientX, y: event.clientY })
+      }}
+    >
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.2),transparent_22%),radial-gradient(circle_at_80%_10%,rgba(59,130,246,0.18),transparent_18%),radial-gradient(circle_at_60%_80%,rgba(139,92,246,0.14),transparent_20%)]" />
+        <div className="absolute left-[-120px] top-1/4 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl animate-blob" />
+        <div className="absolute right-[-100px] top-1/2 h-80 w-80 rounded-full bg-cyan-500/15 blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute left-1/2 top-2/3 h-64 w-64 -translate-x-1/2 rounded-full bg-fuchsia-400/10 blur-3xl" />
+        <div
+          className="absolute h-72 w-72 rounded-full bg-blue-400/10 blur-3xl mix-blend-screen transition-transform duration-500"
+          style={{ transform: `translate3d(${pointer.x - 160}px, ${pointer.y - 160}px, 0)` }}
+        />
+      </div>
+
+      <div className="relative mx-auto flex min-h-screen max-w-[1600px] flex-col gap-24 px-6 py-8 md:px-10 lg:px-14">
+        <motion.header
+          className="flex flex-col gap-3"
+          initial="hidden"
+          animate="show"
+          variants={fadeUp}
         >
-          Count is {count}
-        </button>
-      </section>
+          <div className="flex items-center justify-between gap-4 rounded-full border border-white/10 bg-white/5 px-5 py-3 text-sm text-slate-200 shadow-xl shadow-violet-500/5 backdrop-blur-xl md:max-w-[720px]">
+            <span className="text-violet-300">Thrisha K</span>
+            <span className="text-slate-400">AI Engineer · Backend Developer · Startup Builder</span>
+          </div>
+        </motion.header>
 
-      <div className="ticks"></div>
+        <section className="relative flex min-h-[85vh] flex-col justify-center gap-8 overflow-hidden rounded-[34px] border border-white/10 bg-slate-950/80 px-6 py-10 shadow-2xl shadow-[#4f46e5]/20 backdrop-blur-2xl md:px-12 lg:px-16">
+          <div className="pointer-events-none absolute inset-x-0 top-0 h-24 bg-gradient-to-b from-violet-500/10 to-transparent" />
+          <motion.div
+            className="absolute right-10 top-10 hidden h-24 w-24 rounded-full border border-violet-400/30 bg-violet-500/10 blur-2xl md:block"
+            initial={{ opacity: 0, scale: 0.7 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 1.2 }}
+          />
+          <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.1, ease: 'easeOut' }}
+              className="space-y-6"
+            >
+              <span className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-violet-300 shadow-[0_12px_50px_-40px_rgba(139,92,246,0.8)]">
+                futuristic portfolio
+              </span>
+              <h1 className="max-w-3xl text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">
+                Thrisha K
+              </h1>
+              <div className="flex flex-wrap items-center gap-3 text-3xl font-semibold text-slate-100 sm:text-4xl">
+                <span className="text-violet-300">{displayText}</span>
+                <span className="h-[1.2em] animate-blink text-violet-300">|</span>
+              </div>
+              <p className="max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+                Building premium backend and AI-first experiences with modern engineering, scalable systems, and immersive product design.
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <a
+                  href="#projects"
+                  className="inline-flex items-center justify-center rounded-full bg-violet-400 px-6 py-3 text-base font-semibold text-slate-950 shadow-[0_16px_40px_-16px_rgba(124,58,237,0.8)] transition duration-300 hover:-translate-y-1 hover:bg-violet-300"
+                >
+                  Explore Projects
+                </a>
+                <a
+                  href="#contact"
+                  className="inline-flex items-center justify-center rounded-full border border-violet-400/40 bg-slate-900/80 px-6 py-3 text-base font-semibold text-white transition duration-300 hover:-translate-y-1 hover:border-violet-300/70 hover:bg-slate-900"
+                >
+                  Contact Me
+                </a>
+              </div>
+            </motion.div>
 
-      <section id="next-steps">
-        <div id="docs">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#documentation-icon"></use>
-          </svg>
-          <h2>Documentation</h2>
-          <p>Your questions, answered</p>
-          <ul>
-            <li>
-              <a href="https://vite.dev/" target="_blank">
-                <img className="logo" src={viteLogo} alt="" />
-                Explore Vite
-              </a>
-            </li>
-            <li>
-              <a href="https://react.dev/" target="_blank">
-                <img className="button-icon" src={reactLogo} alt="" />
-                Learn more
-              </a>
-            </li>
-          </ul>
-        </div>
-        <div id="social">
-          <svg className="icon" role="presentation" aria-hidden="true">
-            <use href="/icons.svg#social-icon"></use>
-          </svg>
-          <h2>Connect with us</h2>
-          <p>Join the Vite community</p>
-          <ul>
-            <li>
-              <a href="https://github.com/vitejs/vite" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#github-icon"></use>
-                </svg>
-                GitHub
-              </a>
-            </li>
-            <li>
-              <a href="https://chat.vite.dev/" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#discord-icon"></use>
-                </svg>
-                Discord
-              </a>
-            </li>
-            <li>
-              <a href="https://x.com/vite_js" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#x-icon"></use>
-                </svg>
-                X.com
-              </a>
-            </li>
-            <li>
-              <a href="https://bsky.app/profile/vite.dev" target="_blank">
-                <svg
-                  className="button-icon"
-                  role="presentation"
-                  aria-hidden="true"
-                >
-                  <use href="/icons.svg#bluesky-icon"></use>
-                </svg>
-                Bluesky
-              </a>
-            </li>
-          </ul>
-        </div>
-      </section>
+            <motion.div
+              initial={{ opacity: 0, x: 40 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ duration: 1.1, ease: 'easeOut' }}
+              className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-violet-500/10 backdrop-blur-xl"
+            >
+              <div className="absolute -left-16 top-0 h-44 w-44 rounded-full bg-blue-400/10 blur-3xl" />
+              <div className="absolute -right-10 bottom-8 h-40 w-40 rounded-full bg-fuchsia-500/10 blur-3xl" />
+              <div className="relative z-10 space-y-6">
+                <div className="rounded-[28px] border border-white/10 bg-slate-950/80 p-6 shadow-xl shadow-slate-950/20">
+                  <p className="text-sm uppercase tracking-[0.35em] text-slate-400">Signature system</p>
+                  <h2 className="mt-3 text-3xl font-semibold text-white">AI + Backend</h2>
+                  <p className="mt-3 text-slate-300">Smart product flows, optimized data models, and beautiful interfaces designed for modern startups.</p>
+                </div>
+                <div className="grid gap-4 sm:grid-cols-2">
+                  {['Spring Boot', 'FastAPI', 'React', 'Python'].map((item) => (
+                    <div key={item} className="rounded-3xl border border-white/10 bg-slate-950/80 p-4 text-center text-sm text-slate-200 shadow-inner shadow-slate-950/20">
+                      {item}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </section>
 
-      <div className="ticks"></div>
-      <section id="spacer"></section>
-    </>
+        <motion.section
+          id="projects"
+          className="space-y-8"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeUp}
+        >
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+            <div className="space-y-3">
+              <p className="text-sm uppercase tracking-[0.35em] text-violet-300">Featured work</p>
+              <h2 className="text-4xl font-semibold text-white sm:text-5xl">Projects built for scale.</h2>
+            </div>
+            <p className="max-w-xl text-slate-400">Focused on product-first engineering, interactive experiences, and backend systems that support AI-driven workflows.</p>
+          </div>
+
+          <div className="grid gap-6 xl:grid-cols-2">
+            {projects.map((project, index) => (
+              <motion.article
+                key={project.title}
+                className="group relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/80 p-8 shadow-2xl shadow-slate-950/20 transition duration-500 hover:-translate-y-1 hover:border-violet-400/30"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.75, delay: index * 0.12 }}
+              >
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/5 opacity-0 transition duration-500 group-hover:opacity-100" />
+                <div className="relative z-10 space-y-5">
+                  <div className="flex items-center justify-between gap-4">
+                    <span className="text-sm uppercase tracking-[0.35em] text-violet-300">Project</span>
+                    <div className="flex items-center gap-2 text-xs text-slate-400">
+                      <span className="rounded-full bg-white/5 px-3 py-1">Featured</span>
+                    </div>
+                  </div>
+                  <h3 className="text-3xl font-semibold text-white">{project.title}</h3>
+                  <p className="text-slate-400">{project.description}</p>
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {project.features.map((item) => (
+                      <span key={item} className="rounded-3xl border border-white/10 bg-white/5 px-4 py-3 text-sm text-slate-300">
+                        {item}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap items-center gap-3">
+                    {project.tech.map((tech) => (
+                      <span key={tech} className="rounded-2xl bg-white/5 px-3 py-2 text-xs uppercase tracking-[0.18em] text-slate-300">
+                        {tech}
+                      </span>
+                    ))}
+                  </div>
+                  <div className="flex flex-wrap gap-3 pt-4">
+                    <a
+                      href={project.github}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="inline-flex items-center justify-center rounded-full border border-violet-400/30 bg-slate-900/90 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500/10"
+                    >
+                      GitHub
+                    </a>
+                    <a
+                      href={project.live}
+                      className="inline-flex items-center justify-center rounded-full bg-violet-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-violet-300"
+                    >
+                      Live Demo
+                    </a>
+                  </div>
+                </div>
+              </motion.article>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="space-y-8"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeUp}
+        >
+          <div className="space-y-3">
+            <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Capabilities</p>
+            <h2 className="text-4xl font-semibold text-white">Skills that power modern AI products.</h2>
+          </div>
+          <div className="relative grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+            {skills.map((skill, index) => (
+              <motion.div
+                key={skill}
+                className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-center text-sm font-semibold text-slate-100 shadow-[0_24px_80px_-48px_rgba(59,130,246,0.8)] backdrop-blur-xl"
+                whileHover={{ y: -10, scale: 1.02 }}
+                transition={{ type: 'spring', stiffness: 180, damping: 16 }}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.6, delay: index * 0.05 }}
+              >
+                {skill}
+              </motion.div>
+            ))}
+            <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-violet-400/60 to-transparent" />
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="space-y-8"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeUp}
+        >
+          <div className="space-y-3">
+            <p className="text-sm uppercase tracking-[0.35em] text-violet-300">Experience</p>
+            <h2 className="text-4xl font-semibold text-white">Trajectory of growth.</h2>
+          </div>
+          <div className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-slate-950/20 backdrop-blur-xl">
+            <div className="absolute left-10 top-10 h-[calc(100%-2.5rem)] w-px bg-gradient-to-b from-violet-400/80 to-transparent" />
+            <div className="space-y-10">
+              {timeline.map((item, index) => (
+                <motion.div
+                  key={item.title}
+                  className="relative grid gap-4 md:grid-cols-[0.35fr_1fr]"
+                  initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true, amount: 0.25 }}
+                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                >
+                  <div className="relative pl-10 text-right text-sm text-slate-400 md:pl-0 md:text-left">
+                    <div className="absolute left-0 top-0 h-4 w-4 rounded-full bg-violet-400 shadow-[0_0_0_8px_rgba(124,58,237,0.08)]" />
+                    <p className="font-semibold text-slate-100">{item.date}</p>
+                  </div>
+                  <div className="rounded-[28px] border border-white/10 bg-slate-950/90 p-6 text-slate-300 shadow-lg shadow-slate-950/10">
+                    <h3 className="text-2xl font-semibold text-white">{item.title}</h3>
+                    <p className="mt-2 text-sm uppercase tracking-[0.18em] text-violet-300">{item.company}</p>
+                    <ul className="mt-4 list-disc space-y-3 pl-5 text-sm leading-7 text-slate-400">
+                      {item.bullets.map((bullet) => (
+                        <li key={bullet}>{bullet}</li>
+                      ))}
+                    </ul>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </motion.section>
+
+        <motion.section
+          className="space-y-8"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeUp}
+        >
+          <div className="space-y-3">
+            <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Achievements</p>
+            <h2 className="text-4xl font-semibold text-white">Premium recognition.</h2>
+          </div>
+          <div className="grid gap-6 xl:grid-cols-3">
+            {achievements.map((achievement, index) => (
+              <motion.div
+                key={achievement.label}
+                className="rounded-[32px] border border-white/10 bg-slate-950/80 p-8 text-center shadow-2xl shadow-slate-950/20 backdrop-blur-xl"
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, amount: 0.2 }}
+                transition={{ duration: 0.7, delay: index * 0.08 }}
+              >
+                <div className="mb-4 rounded-3xl bg-violet-500/10 p-6 text-4xl font-semibold text-violet-300">{achievement.value}</div>
+                <p className="text-sm uppercase tracking-[0.3em] text-slate-400">{achievement.label}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.section>
+
+        <motion.section
+          id="contact"
+          className="space-y-10"
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, amount: 0.2 }}
+          variants={fadeUp}
+        >
+          <div className="space-y-3">
+            <p className="text-sm uppercase tracking-[0.35em] text-violet-300">Contact</p>
+            <h2 className="text-4xl font-semibold text-white">Command center for collaboration.</h2>
+          </div>
+          <div className="grid gap-6 lg:grid-cols-[1.1fr_0.9fr]">
+            <div className="rounded-[32px] border border-white/10 bg-slate-950/80 p-8 shadow-[0_35px_120px_-50px_rgba(59,130,246,0.35)] backdrop-blur-xl">
+              <div className="space-y-5">
+                <p className="text-lg leading-8 text-slate-300">
+                  I’m available for internships, backend and AI engineering roles, and ambitious product work with startups.
+                </p>
+                <div className="rounded-[28px] border border-white/10 bg-white/5 p-6">
+                  <p className="text-sm uppercase tracking-[0.35em] text-violet-300">Get in touch</p>
+                  <p className="mt-4 text-3xl font-semibold text-white">kthrisha54@gmail.com</p>
+                  <p className="mt-2 text-slate-500">Thrisha K · +91 7022472620</p>
+                </div>
+              </div>
+            </div>
+            <div className="rounded-[32px] border border-white/10 bg-slate-950/80 p-8 shadow-xl shadow-slate-950/20 backdrop-blur-xl">
+              <div className="space-y-5">
+                <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Follow the network</p>
+                <div className="grid gap-4">
+                  {socials.map((social) => (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="flex items-center justify-between rounded-3xl border border-white/10 bg-slate-900/80 px-5 py-4 text-white transition duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900"
+                    >
+                      <span>{social.label}</span>
+                      <span className="text-violet-300">↗</span>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        </motion.section>
+      </div>
+    </div>
   )
 }
 
