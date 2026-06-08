@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
+import { useEffect, useRef, useState } from 'react'
+import { animate, motion, useInView, useMotionValue, useSpring } from 'framer-motion'
 
-const roles = ['AI Developer', 'Backend Engineer', 'Problem Solver', 'Builder']
+const roles = ['AI Developer', 'Backend Engineer', 'Problem Solver', 'Tech Builder']
 
 const projects = [
   {
@@ -72,15 +72,107 @@ const socials = [
   { label: 'Email', href: 'mailto:kthrisha54@gmail.com' }
 ]
 
+const sectionContainer = {
+  hidden: { opacity: 0 },
+  show: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.08,
+      delayChildren: 0.04
+    }
+  }
+}
+
 const fadeUp = {
-  hidden: { opacity: 0, y: 36 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.8, ease: 'easeOut' } }
+  hidden: { opacity: 0, y: 22 },
+  show: { opacity: 1, y: 0, transition: { duration: 0.55, ease: 'easeOut' } }
+}
+
+function MagneticLink({ href, children, className, ...props }) {
+  const ref = useRef(null)
+  const x = useMotionValue(0)
+  const y = useMotionValue(0)
+  const springX = useSpring(x, { stiffness: 180, damping: 22 })
+  const springY = useSpring(y, { stiffness: 180, damping: 22 })
+
+  const handleMouseMove = (event) => {
+    const rect = ref.current?.getBoundingClientRect()
+    if (!rect) return
+    const translatorX = (event.clientX - rect.left - rect.width / 2) / 6
+    const translatorY = (event.clientY - rect.top - rect.height / 2) / 8
+    x.set(translatorX)
+    y.set(translatorY)
+  }
+
+  const handleMouseLeave = () => {
+    x.set(0)
+    y.set(0)
+  }
+
+  return (
+    <motion.a
+      ref={ref}
+      href={href}
+      className={className}
+      style={{ x: springX, y: springY }}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      whileHover={{ scale: 1.02 }}
+      whileTap={{ scale: 0.98 }}
+      transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.2 }}
+      {...props}
+    >
+      {children}
+    </motion.a>
+  )
+}
+
+function CountUpCard({ value, suffix = '', decimals = 0, inView, description }) {
+  const [displayValue, setDisplayValue] = useState(0)
+  const motionValue = useMotionValue(0)
+
+  useEffect(() => {
+    const unsubscribe = motionValue.on('change', (latest) => {
+      setDisplayValue(decimals ? Number(latest.toFixed(decimals)) : Math.round(latest))
+    })
+    return () => unsubscribe()
+  }, [motionValue, decimals])
+
+  useEffect(() => {
+    if (!inView) return
+    animate(motionValue, value, {
+      duration: 1,
+      ease: 'easeOut'
+    })
+  }, [inView, motionValue, value])
+
+  return (
+    <motion.div
+      className="rounded-[32px] border border-white/10 bg-slate-950/80 p-8 text-center shadow-2xl shadow-slate-950/20 backdrop-blur-xl"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, amount: 0.3 }}
+      transition={{ duration: 0.45, ease: 'easeOut' }}
+    >
+      <div className="mb-4 rounded-3xl bg-violet-500/10 p-6 text-4xl font-semibold text-violet-300">
+        {displayValue}
+        {suffix}
+      </div>
+      <p className="text-sm uppercase tracking-[0.3em] text-slate-400">{description}</p>
+    </motion.div>
+  )
 }
 
 function App() {
   const [phraseIndex, setPhraseIndex] = useState(0)
   const [displayText, setDisplayText] = useState('')
-  const [pointer, setPointer] = useState({ x: 0, y: 0 })
+  const [pointer, setPointer] = useState({ x: -240, y: -240 })
+  const pointerX = useMotionValue(-240)
+  const pointerY = useMotionValue(-240)
+  const springX = useSpring(pointerX, { stiffness: 300, damping: 20 })
+  const springY = useSpring(pointerY, { stiffness: 300, damping: 20 })
+  const achievementRef = useRef(null)
+  const achievementInView = useInView(achievementRef, { once: true, amount: 0.45 })
 
   useEffect(() => {
     const current = roles[phraseIndex]
@@ -101,6 +193,11 @@ function App() {
     return () => clearTimeout(timeout)
   }, [displayText, phraseIndex])
 
+  useEffect(() => {
+    pointerX.set(pointer.x - 140)
+    pointerY.set(pointer.y - 140)
+  }, [pointer, pointerX, pointerY])
+
   return (
     <div
       className="relative min-h-screen overflow-hidden bg-[#05040f] text-slate-100"
@@ -111,11 +208,11 @@ function App() {
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(168,85,247,0.2),transparent_22%),radial-gradient(circle_at_80%_10%,rgba(59,130,246,0.18),transparent_18%),radial-gradient(circle_at_60%_80%,rgba(139,92,246,0.14),transparent_20%)]" />
         <div className="absolute left-[-120px] top-1/4 h-72 w-72 rounded-full bg-violet-500/20 blur-3xl animate-blob" />
-        <div className="absolute right-[-100px] top-1/2 h-80 w-80 rounded-full bg-cyan-500/15 blur-3xl animate-blob animation-delay-2000" />
+        <div className="absolute right-[-100px] top-1/2 h-80 w-80 rounded-full bg-cyan-500/15 blur-3xl animate-blob" style={{ animationDelay: '1.8s' }} />
         <div className="absolute left-1/2 top-2/3 h-64 w-64 -translate-x-1/2 rounded-full bg-fuchsia-400/10 blur-3xl" />
-        <div
-          className="absolute h-72 w-72 rounded-full bg-blue-400/10 blur-3xl mix-blend-screen transition-transform duration-500"
-          style={{ transform: `translate3d(${pointer.x - 160}px, ${pointer.y - 160}px, 0)` }}
+        <motion.div
+          className="cursor-glow"
+          style={{ x: springX, y: springY }}
         />
       </div>
 
@@ -138,48 +235,55 @@ function App() {
             className="absolute right-10 top-10 hidden h-24 w-24 rounded-full border border-violet-400/30 bg-violet-500/10 blur-2xl md:block"
             initial={{ opacity: 0, scale: 0.7 }}
             animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 1.2 }}
+            transition={{ duration: 0.45, ease: 'easeOut' }}
           />
           <div className="grid gap-10 lg:grid-cols-[1.2fr_0.8fr] lg:items-center">
             <motion.div
-              initial={{ opacity: 0, x: -40 }}
+              initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.1, ease: 'easeOut' }}
+              transition={{ duration: 0.55, ease: 'easeOut' }}
               className="space-y-6"
             >
               <span className="inline-flex items-center gap-2 rounded-full bg-violet-500/10 px-4 py-2 text-xs uppercase tracking-[0.3em] text-violet-300 shadow-[0_12px_50px_-40px_rgba(139,92,246,0.8)]">
                 futuristic portfolio
               </span>
-              <h1 className="max-w-3xl text-5xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">
-                Thrisha K
-              </h1>
-              <div className="flex flex-wrap items-center gap-3 text-3xl font-semibold text-slate-100 sm:text-4xl">
-                <span className="text-violet-300">{displayText}</span>
-                <span className="h-[1.2em] animate-blink text-violet-300">|</span>
+              <div className="space-y-4">
+                <h1 className="text-5xl font-semibold uppercase leading-[0.95] tracking-[-0.04em] text-white sm:text-6xl lg:text-7xl">
+                  THRISHA K
+                </h1>
+                <div className="space-y-1 text-3xl font-semibold leading-[1.02] text-slate-100 sm:text-4xl lg:text-5xl">
+                  <p>Building AI Systems</p>
+                  <p>That Think, Analyze,</p>
+                  <p>and Scale.</p>
+                </div>
               </div>
-              <p className="max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
+              <motion.div variants={fadeUp} className="flex items-center gap-3 text-2xl font-semibold text-violet-300 sm:text-3xl">
+                <span>{displayText}</span>
+                <span className="inline-block h-[1.4em] animate-blink">|</span>
+              </motion.div>
+              <motion.p variants={fadeUp} className="max-w-2xl text-lg leading-8 text-slate-300 sm:text-xl">
                 Building premium backend and AI-first experiences with modern engineering, scalable systems, and immersive product design.
-              </p>
+              </motion.p>
               <div className="flex flex-wrap gap-4">
-                <a
+                <MagneticLink
                   href="#projects"
-                  className="inline-flex items-center justify-center rounded-full bg-violet-400 px-6 py-3 text-base font-semibold text-slate-950 shadow-[0_16px_40px_-16px_rgba(124,58,237,0.8)] transition duration-300 hover:-translate-y-1 hover:bg-violet-300"
+                  className="button-magnetic inline-flex items-center justify-center rounded-full bg-violet-400 px-6 py-3 text-base font-semibold text-slate-950 shadow-[0_16px_40px_-16px_rgba(124,58,237,0.8)] transition duration-200 hover:bg-violet-300"
                 >
                   Explore Projects
-                </a>
-                <a
+                </MagneticLink>
+                <MagneticLink
                   href="#contact"
-                  className="inline-flex items-center justify-center rounded-full border border-violet-400/40 bg-slate-900/80 px-6 py-3 text-base font-semibold text-white transition duration-300 hover:-translate-y-1 hover:border-violet-300/70 hover:bg-slate-900"
+                  className="button-magnetic inline-flex items-center justify-center rounded-full border border-violet-400/40 bg-slate-900/80 px-6 py-3 text-base font-semibold text-white transition duration-200 hover:border-violet-300/70 hover:bg-slate-900"
                 >
                   Contact Me
-                </a>
+                </MagneticLink>
               </div>
             </motion.div>
 
             <motion.div
               initial={{ opacity: 0, x: 40 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 1.1, ease: 'easeOut' }}
+              animate={{ opacity: 1, x: 0, y: [0, -2, 0] }}
+              transition={{ duration: 2.8, ease: 'easeInOut', repeat: Infinity }}
               className="relative overflow-hidden rounded-[32px] border border-white/10 bg-white/5 p-6 shadow-2xl shadow-violet-500/10 backdrop-blur-xl"
             >
               <div className="absolute -left-16 top-0 h-44 w-44 rounded-full bg-blue-400/10 blur-3xl" />
@@ -208,7 +312,7 @@ function App() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionContainer}
         >
           <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
             <div className="space-y-3">
@@ -219,16 +323,19 @@ function App() {
           </div>
 
           <div className="grid gap-6 xl:grid-cols-2">
-            {projects.map((project, index) => (
-              <motion.article
-                key={project.title}
-                className="group relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/80 p-8 shadow-2xl shadow-slate-950/20 transition duration-500 hover:-translate-y-1 hover:border-violet-400/30"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.75, delay: index * 0.12 }}
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/5 opacity-0 transition duration-500 group-hover:opacity-100" />
+            {projects.map((project, index) => {
+              const featured = project.title === 'InterviewIQ'
+              return (
+                <motion.article
+                  key={project.title}
+                  className={`group relative overflow-hidden rounded-[32px] border border-white/10 bg-slate-950/80 p-8 shadow-2xl shadow-slate-950/20 transition duration-200 ${featured ? 'hover:border-violet-300/40' : 'hover:border-violet-400/30'}`}
+                  initial={{ opacity: 0, y: 30 }}
+                  animate={{ opacity: 1, y: [0, featured ? -7 : -4, 0] }}
+                  whileHover={{ scale: featured ? 1.034 : 1.02 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ duration: 0.5, ease: 'easeOut', delay: index * 0.04 }}
+                >
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-500/10 via-transparent to-cyan-500/5 opacity-0 transition duration-200 group-hover:opacity-100" />
                 <div className="relative z-10 space-y-5">
                   <div className="flex items-center justify-between gap-4">
                     <span className="text-sm uppercase tracking-[0.35em] text-violet-300">Project</span>
@@ -253,24 +360,24 @@ function App() {
                     ))}
                   </div>
                   <div className="flex flex-wrap gap-3 pt-4">
-                    <a
+                    <MagneticLink
                       href={project.github}
                       target="_blank"
                       rel="noreferrer"
-                      className="inline-flex items-center justify-center rounded-full border border-violet-400/30 bg-slate-900/90 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500/10"
+                      className="button-magnetic inline-flex items-center justify-center rounded-full border border-violet-400/30 bg-slate-900/90 px-5 py-3 text-sm font-semibold text-white transition hover:bg-violet-500/10"
                     >
                       GitHub
-                    </a>
-                    <a
+                    </MagneticLink>
+                    <MagneticLink
                       href={project.live}
-                      className="inline-flex items-center justify-center rounded-full bg-violet-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-violet-300"
+                      className="button-magnetic inline-flex items-center justify-center rounded-full bg-violet-400 px-5 py-3 text-sm font-semibold text-slate-950 transition hover:bg-violet-300"
                     >
                       Live Demo
-                    </a>
+                    </MagneticLink>
                   </div>
                 </div>
               </motion.article>
-            ))}
+            )})}
           </div>
         </motion.section>
 
@@ -279,7 +386,7 @@ function App() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionContainer}
         >
           <div className="space-y-3">
             <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Capabilities</p>
@@ -287,16 +394,15 @@ function App() {
           </div>
           <div className="relative grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
             {skills.map((skill, index) => (
-              <motion.div
-                key={skill}
-                className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-center text-sm font-semibold text-slate-100 shadow-[0_24px_80px_-48px_rgba(59,130,246,0.8)] backdrop-blur-xl"
-                whileHover={{ y: -10, scale: 1.02 }}
-                transition={{ type: 'spring', stiffness: 180, damping: 16 }}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.6, delay: index * 0.05 }}
-              >
+                <motion.div
+                  key={skill}
+                  className="rounded-[28px] border border-white/10 bg-white/5 p-6 text-center text-sm font-semibold text-slate-100 shadow-[0_24px_80px_-48px_rgba(59,130,246,0.8)] backdrop-blur-xl"
+                  whileHover={{ y: -6, scale: 1.02 }}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true, amount: 0.2 }}
+                  transition={{ type: 'spring', stiffness: 300, damping: 20, duration: 0.2, delay: index * 0.03 }}
+                >
                 {skill}
               </motion.div>
             ))}
@@ -309,7 +415,7 @@ function App() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionContainer}
         >
           <div className="space-y-3">
             <p className="text-sm uppercase tracking-[0.35em] text-violet-300">Experience</p>
@@ -325,7 +431,7 @@ function App() {
                   initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
                   whileInView={{ opacity: 1, x: 0 }}
                   viewport={{ once: true, amount: 0.25 }}
-                  transition={{ duration: 0.8, delay: index * 0.1 }}
+                  transition={{ duration: 0.5, ease: 'easeOut', delay: index * 0.04 }}
                 >
                   <div className="relative pl-10 text-right text-sm text-slate-400 md:pl-0 md:text-left">
                     <div className="absolute left-0 top-0 h-4 w-4 rounded-full bg-violet-400 shadow-[0_0_0_8px_rgba(124,58,237,0.08)]" />
@@ -347,30 +453,39 @@ function App() {
         </motion.section>
 
         <motion.section
+          ref={achievementRef}
           className="space-y-8"
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
+          variants={sectionContainer}
         >
-          <div className="space-y-3">
+          <motion.div variants={fadeUp} className="space-y-3">
             <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Achievements</p>
             <h2 className="text-4xl font-semibold text-white">Premium recognition.</h2>
-          </div>
+          </motion.div>
           <div className="grid gap-6 xl:grid-cols-3">
-            {achievements.map((achievement, index) => (
-              <motion.div
-                key={achievement.label}
-                className="rounded-[32px] border border-white/10 bg-slate-950/80 p-8 text-center shadow-2xl shadow-slate-950/20 backdrop-blur-xl"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, amount: 0.2 }}
-                transition={{ duration: 0.7, delay: index * 0.08 }}
-              >
-                <div className="mb-4 rounded-3xl bg-violet-500/10 p-6 text-4xl font-semibold text-violet-300">{achievement.value}</div>
-                <p className="text-sm uppercase tracking-[0.3em] text-slate-400">{achievement.label}</p>
-              </motion.div>
-            ))}
+            <CountUpCard
+              value={9.56}
+              suffix=""
+              decimals={2}
+              inView={achievementInView}
+              description="Excellent CGPA"
+            />
+            <CountUpCard
+              value={50}
+              suffix="K+"
+              decimals={0}
+              inView={achievementInView}
+              description="Items processed"
+            />
+            <CountUpCard
+              value={2}
+              suffix=""
+              decimals={0}
+              inView={achievementInView}
+              description="International awards"
+            />
           </div>
         </motion.section>
 
@@ -380,9 +495,8 @@ function App() {
           initial="hidden"
           whileInView="show"
           viewport={{ once: true, amount: 0.2 }}
-          variants={fadeUp}
-        >
-          <div className="space-y-3">
+          variants={sectionContainer}
+        >          <div className="space-y-3">
             <p className="text-sm uppercase tracking-[0.35em] text-violet-300">Contact</p>
             <h2 className="text-4xl font-semibold text-white">Command center for collaboration.</h2>
           </div>
@@ -404,16 +518,16 @@ function App() {
                 <p className="text-sm uppercase tracking-[0.35em] text-cyan-300">Follow the network</p>
                 <div className="grid gap-4">
                   {socials.map((social) => (
-                    <a
+                    <MagneticLink
                       key={social.label}
                       href={social.href}
                       target="_blank"
                       rel="noreferrer"
-                      className="flex items-center justify-between rounded-3xl border border-white/10 bg-slate-900/80 px-5 py-4 text-white transition duration-300 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900"
+                      className="button-magnetic flex items-center justify-between rounded-3xl border border-white/10 bg-slate-900/80 px-5 py-4 text-white transition duration-200 hover:-translate-y-1 hover:border-cyan-400/30 hover:bg-slate-900"
                     >
                       <span>{social.label}</span>
                       <span className="text-violet-300">↗</span>
-                    </a>
+                    </MagneticLink>
                   ))}
                 </div>
               </div>

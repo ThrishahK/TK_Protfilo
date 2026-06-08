@@ -82,9 +82,39 @@ body {
 }
 
 .button-magnetic {
-  transition: transform 0.25s ease;
+  transition: transform 0.2s ease;
 }
 
 .button-magnetic:hover {
   transform: translateY(-2px) scale(1.02);
+}
+
+.cursor-glow {
+  position: absolute;
+  width: 280px;
+  height: 280px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, rgba(168, 85, 247, 0.22), rgba(59, 130, 246, 0.06) 45%, transparent 68%);
+  filter: blur(40px);
+  mix-blend-mode: screen;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.particle-dot {
+  position: absolute;
+  border-radius: 9999px;
+  background: rgba(255, 255, 255, 0.12);
+  box-shadow: 0 0 24px rgba(168, 85, 247, 0.16);
+  animation: drift 12s ease-in-out infinite;
+}
+
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(6px, -8px) scale(1.02);
+  }
 }
